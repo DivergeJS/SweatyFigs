@@ -20,10 +20,10 @@ module.exports = function(app) {
     .get(function(req, res){
       db.getFavorites(req, res);
     })
-    .delete(function(req, res){
+    .post(function(req, res){
       db.addFavorite(req, res);
     })  
-    .post(function(req, res){
+    .put(function(req, res){
       console.log('inside the delete method of server');
       db.deleteFavorite(req, res);
     });
