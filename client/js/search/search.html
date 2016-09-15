@@ -1,9 +1,14 @@
+  <!-- About Section -->
+    <section id="about" class="container content-section text-center">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2">
+                
 <div class="search-container" id="search-container"> <!-- had the class '.container' -->
   <div ng-init="initIngredients()" class="row search-row container"> <!-- start of row -->
     <div class="input-field col s6 pull-s1 left-side-search">
       <form>
-	     <input ng-model="ingredient" type="text" id="autocomplete-input" class="autocomplete text-white" pattern="^\s*([A-Za-z]+\s*)+"/>
-	     <label for="autocomplete-input">Enter Ingredient</label>
+         <input ng-model="ingredient" type="text" id="autocomplete-input" class="autocomplete text-white" pattern="^\s*([A-Za-z]+\s*)+"/>
+         <label for="autocomplete-input">Enter Ingredient</label>
         <!-- old button -->
         <!-- <button class="btn-floating btn-medium waves-effect waves-light green"><i class="material-icons">add</i></button> -->
         <button ng-click="addIngredient()" class="btn right ingredients-button" type="submit" name="action">Add Selected!
@@ -56,6 +61,6 @@
   </div> <!-- end of row -->
 </div>
 
-
-
-
+            </div>
+        </div>
+    </section>
