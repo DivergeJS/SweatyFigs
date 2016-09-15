@@ -33,8 +33,9 @@ angular.module('fridegly.search', [])
     $scope.addFavorite = function() {
       var name = $scope.ingredient.trim().split(/\s+/).map(function(item) {
         $scope.shared.favorites.indexOf(name) === -1 && $scope.shared.favorites.push(name);
-      }
-    )};
+      });
+      
+    };
 
     /**
      * @name deleteIngredient
