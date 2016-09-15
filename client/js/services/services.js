@@ -61,7 +61,8 @@ angular.module('fridgely.services', [])
         data: {
           favorite: favorite
         }
-      }).then(function() {
+      }).then(function(resp) {
+        return resp;
         console.log('you added favorite item');
       })
     };
@@ -91,14 +92,13 @@ angular.module('fridgely.services', [])
     
     var removeFavorite = function(favorite) {
       return $http({
-        method: 'DELETE',
+        method: 'POST',
         url: '/user/favorites',
         data: {
           favorite: favorite
         }
       }).then(function(resp) {
-        console.log(resp);
-        console.log('you deleted all your favorites ingredients...');
+        return resp;
       })
     };
 
