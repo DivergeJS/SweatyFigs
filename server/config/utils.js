@@ -21,8 +21,14 @@ exports.addFavorite = function(req, res){
 
 exports.deleteFavorite = function(req, res){
 	var user = jwt.decode(req.headers['x-access-token'], 'secret');
-	console.log('req', req)
-	User.findOne({ user: user })
-	.find({ favorites: req.query.favorites })
-		.remove().exec();
+	console.log(req.body);
+	var favorite = req.body.favorite;
+	console.log('User', user);
+	User.findOne({ 'local.username': user }, (err, entry) => {
+		console.log(entry);
+		entry.local.favorites.splice(entry.local.favorites.indexOf(favorite), 1);
+		entry.save();
+		res.send(200);
+	});	
+
 };

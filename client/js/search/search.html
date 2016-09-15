@@ -1,15 +1,15 @@
 <div class="search-container" id="search-container"> <!-- had the class '.container' -->
   <div ng-init="initIngredients()" class="row search-row container"> <!-- start of row -->
     <div class="input-field col s6 pull-s1 left-side-search">
-      <form ng-submit="addIngredient()">
+      <form>
 	     <input ng-model="ingredient" type="text" id="autocomplete-input" class="autocomplete text-white" pattern="^\s*([A-Za-z]+\s*)+"/>
 	     <label for="autocomplete-input">Enter Ingredient</label>
         <!-- old button -->
         <!-- <button class="btn-floating btn-medium waves-effect waves-light green"><i class="material-icons">add</i></button> -->
-        <button class="btn right ingredients-button" type="submit" name="action">Add Selected!
+        <button ng-click="addIngredient()" class="btn right ingredients-button" type="submit" name="action">Add Selected!
           <i class="material-icons right"></i>
         </button>
-        <button class="btn right ingredients-button" type="submit" name="action">Add Favorite!
+        <button ng-click="addFavorite()" class="btn right ingredients-button" type="submit" name="action">Add Favorite!
           <i class="material-icons left"></i>
         </button>
         <br>
