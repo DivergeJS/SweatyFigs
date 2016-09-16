@@ -30,6 +30,11 @@
         </div>
     </div>
 
+    <div ng-controller = "myCtrl">
+      <input type="file" file-model="myFile"/>
+      <button ng-click="uploadFile()">upload me</button>
+    </div>
+
     <div>
       <div ng-if="ingredient" ng-repeat="i in data.ingredientList | filter: ingredient | limitTo: 10">{{i}}</div>
     </div>
