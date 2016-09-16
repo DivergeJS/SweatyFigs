@@ -12,7 +12,7 @@
 	     <label for="autocomplete-input">Enter Ingredient</label>
         <!-- old button -->
         <!-- <button class="btn-floating btn-medium waves-effect waves-light green"><i class="material-icons">add</i></button> -->
-        <button ng-click="addIngredient()" class="btn right ingredients-button" type="submit" name="action">Add Selected!
+        <button ng-click="selectIngredient()" class="btn right ingredients-button" type="submit" name="action">Add Selected!
           <i class="material-icons right"></i>
         </button>
         <button ng-click="addFavorite()" class="btn right ingredients-button" type="submit" name="action">Add Favorite!
@@ -47,8 +47,8 @@
           
           <div class="ingredient card-panel small blue-grey darken-1"> 
             <div class="card-content text-white">
-              <span ng-click="selectIngredient(ingredient)" class="card-title activator text-white">{{ ingredient }}</span>
-              <i class="material-icons right close" value="apple" ng-click="deleteIngredient()">close</i>
+              <span ng-click="addFavorite(ingredient)" class="card-title activator text-white">{{ ingredient }}</span>
+              <i class="material-icons right close" value="apple" ng-click="deleteIngredient(ingredient)">close</i>
             </div>
             <!-- end of the chip -->
           </div>
@@ -60,11 +60,11 @@
         <h4 class="search-h4-text valign center-align">FAVORITE INGREDIENTS:</h4>
       </div>
       <div class="container row col s12 m5 ingredients-search" id="ingredients-search">
-        <div ng-repeat="favorite in favorites">
-          <div ng-click="selectFavorite(favorite)" class="ingredient card-panel small blue-grey darken-1"> 
+        <div ng-repeat="favorite in data.favorites">
+          <div class="ingredient card-panel small blue-grey darken-1"> 
             <div class="card-content text-white">
-              <span class="card-title activator text-white">{{ favorite }}</span>
-              <i class="material-icons right close" value="apple" ng-click="deleteIngredient()">close</i>
+              <span ng-click="selectFavorite(favorite)" class="card-title activator text-white">{{ favorite }}</span>
+              <i class="material-icons right close" value="apple" ng-click="removeFavorite(favorite)">close</i>
             </div>
           </div>
         </div> <!-- end of the ng-repeat-->
