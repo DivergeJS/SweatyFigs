@@ -1,19 +1,4 @@
 angular.module('fridgely.services', [])
-  .directive('fileModel', ['$parse', function ($parse) {
-    return {
-        restrict: 'A',
-        link: function(scope, element, attrs) {
-            var model = $parse(attrs.fileModel);
-            var modelSetter = model.assign;
-            
-            element.bind('change', function(){
-                scope.$apply(function(){
-                    modelSetter(scope, element[0].files[0]);
-                });
-            });
-        }
-    };
-  }])
   .factory('Search', function($http, $location) {
     var recipes = [];
 
@@ -97,29 +82,6 @@ angular.module('fridgely.services', [])
       getUserRecipes: getUserRecipes
     };
   })
-  .service('fileUpload', ['$http', function ($http) {
-    this.uploadFileToUrl = function(file, uploadUrl){
-      var fd = new FormData();
-      fd.append('file', file);
-      console.log(fd.entries())
-      fd.forEach((item) => console.log(item));
-      $http({
-          method: "POST",
-          url: uploadUrl,
-          data: {fd:fd},
-          // processData: false,
-          // transformRequest: angular.identity,
-          // headers: {
-          //   'Content-Type': false
-          // }
-      })
-      .success(function(){
-      })
-      .error(function(err){
-        console.log(err);
-      });
-    }
-  }])
   .factory('Favorites', function($window, $http, $location) {
     
     /**
