@@ -1,58 +1,57 @@
 angular.module('fridgely.favorites', [])
-	.controller('FavoritesController', function($scope, Favorites, Shared) {
-		$scope.data = {};
-		$scope.shared = Shared;
-		$scope.shared.favorites = [];
-		// $scope.shared.favorites = $scope.data.favorites;
+	.controller('FavoritesController', function($scope, Favorites, Shared, FileUploader) {
+		var uploader = $scope.uploader = new FileUploader({
+		      url: '/pictures/upc'
+		    });
 
-		var getFavorites = () => {
-			Favorites.getFavorites().then((res) => {
-				$scope.data.favorites = res.data.local.favorites;
-				//$scope.shared.favorites = $scope.data.favorites;
-			});
-		};
+		    uploader.filters.push({
+		      name: 'imageFilter',
+		      fn: function(item /*{File|FileLikeObject}*/, options) {
+		          var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+		          return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+		      }
+		    });
 
-		$scope.shared.getFavorites = getFavorites;
+		    // CALLBACKS
 
-		$scope.addFavorite = () => {
-			// used to demo shared object between components.
-			$scope.shared.input = $scope.data.favorite;
+		    uploader.onWhenAddingFileFailed = function(item /*{File|FileLikeObject}*/, filter, options) {
+		        console.info('onWhenAddingFileFailed', item, filter, options);
+		    };
+		    uploader.onAfterAddingFile = function(fileItem) {
+		        console.info('onAfterAddingFile', fileItem);
+		    };
+		    uploader.onAfterAddingAll = function(addedFileItems) {
+		        console.info('onAfterAddingAll', addedFileItems);
+		    };
+		    uploader.onBeforeUploadItem = function(item) {
+		        console.info('onBeforeUploadItem', item);
+		    };
+		    uploader.onProgressItem = function(fileItem, progress) {
+		        console.info('onProgressItem', fileItem, progress);
+		    };
+		    uploader.onProgressAll = function(progress) {
+		        console.info('onProgressAll', progress);
+		    };
+		    uploader.onSuccessItem = function(fileItem, response, status, headers) {
+		        console.info('onSuccessItem', fileItem, response, status, headers);
+		    };
+		    uploader.onErrorItem = function(fileItem, response, status, headers) {
+		        console.info('onErrorItem', fileItem, response, status, headers);
+		    };
+		    uploader.onCancelItem = function(fileItem, response, status, headers) {
+		        console.info('onCancelItem', fileItem, response, status, headers);
+		    };
+		    uploader.onCompleteItem = function(fileItem, response, status, headers) {
+		        console.info('onCompleteItem', fileItem, response, status, headers);
 
-			if ($scope.data.favorite && $scope.data.favorites.indexOf($scope.data.favorite) === -1) {
-				var name = $scope.data.favorite.trim().split(/\s+/).map(function(item) {
-				  return item[0].toUpperCase() + item.substr(1).toLowerCase();
-				}).join(' ');
-				if ($scope.data.favorites.indexOf(name) === -1) {
-					Favorites.addFavorite(name).then(() => {
-						$scope.data.favorite = '';
-						getFavorites();
-					});
-				}
-			}
-		};
+		        $scope.uploadedItem = JSON.stringify(fileItem);
+		        console.log($fileItem, "FILEITEM")
+		    };
+		    uploader.onCompleteAll = function() {
+		        console.info('onCompleteAll');
+		    };
 
-		$scope.removeFavorite = (favorite) => {
-			console.log(favorite);
-			// var index = $scope.shared.favorites.indexOf(favorite);
-  	// 		$scope.shared.favorites.splice(index, 1); 
-			
-			Favorites.removeFavorite(favorite).then(() => {
-				getFavorites();
-			});
-			// $scope.shared.initIngredients();
-			// console.log('inside remove favorites: ',$scope.shared.favorites);
-		};
-
-		$scope.selectFavorite = (favorite) => {
-			console.log('Clicked');
-			if ($scope.shared.favorites.indexOf(favorite) === -1) {
-				$scope.shared.favorites.push(favorite);
-			}
-			$scope.shared.initIngredients();
-			console.log($scope.shared.favorites);
-		};
-
-		getFavorites();
+		    console.info('uploader', uploader);
 	})
 	.component('favoritesComponent', {
 		templateUrl: 'js/favorites/favorites.html',

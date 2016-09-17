@@ -14,17 +14,6 @@ angular.module('fridgely.services', [])
         }
     };
   }])
-  .controller('myCtrl', ['$scope', 'fileUpload', function($scope, fileUpload){
-    
-    $scope.uploadFile = function(){
-        var file = $scope.myFile;
-        console.log('file is ' );
-        console.dir(file);
-        var uploadUrl = "/fileUpload";
-        fileUpload.uploadFileToUrl(file, uploadUrl);
-    };
-    
-  }])
   .factory('Search', function($http, $location) {
     var recipes = [];
 
@@ -72,6 +61,29 @@ angular.module('fridgely.services', [])
       getIngredientList: getIngredientList
     };
   })
+  .service('fileUpload', ['$http', function ($http) {
+    this.uploadFileToUrl = function(file, uploadUrl){
+      var fd = new FormData();
+      fd.append('file', file);
+      console.log(fd.entries())
+      fd.forEach((item) => console.log(item));
+      $http({
+          method: "POST",
+          url: uploadUrl,
+          data: {fd:fd},
+          // processData: false,
+          // transformRequest: angular.identity,
+          // headers: {
+          //   'Content-Type': false
+          // }
+      })
+      .success(function(){
+      })
+      .error(function(err){
+        console.log(err);
+      });
+    }
+  }])
   .factory('Favorites', function($window, $http, $location) {
     
     /**
@@ -146,7 +158,7 @@ angular.module('fridgely.services', [])
         url: '/api/users/login',
         data: user
       })
-      .then(function (resp) {
+      .then(function(resp) {
         return resp.data.token;
       });
     };

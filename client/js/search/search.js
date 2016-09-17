@@ -1,51 +1,194 @@
 angular.module('fridegly.search', [])
-  .controller('SearchController', function($scope, Search, Shared, Favorites) {
+  .controller('SearchController', function($scope, FileUploader, $http, Search, Shared, Favorites, fileUpload) {
     $scope.data = {};
+    $scope.shared = Shared;
+    $scope.data.ingredients = [];
     $scope.data.selected = [];
     $scope.data.ingredientList = [];
     $scope.data.favorites = [];
 
+    $scope.stepsModel = [];
+
+    $scope.imageUpload = function(element){
+        var reader = new FileReader();
+        reader.onload = $scope.imageIsLoaded;
+        reader.readAsDataURL(element.files[0]);
+    }
+
+    $scope.imageIsLoaded = function(e){
+        console.log("WTF")
+        $scope.$apply(function() {
+            $scope.stepsModel.push(e.target.result);
+        });
+
+      var UPC_SET = {
+          "3211": '0',
+          "2221": '1',
+          "2122": '2',
+          "1411": '3',
+          "1132": '4',
+          "1231": '5',
+          "1114": '6',
+          "1312": '7',
+          "1213": '8',
+          "3112": '9'
+      };
+      
+      var getBarcodeFromImage = function(imgOrId){
+          var doc = document,
+              img = doc.getElementById('imgOrId');
+              var canvas = doc.createElement("canvas"),
+              ctx = canvas.getContext("2d"),
+              width = img.width,
+              height = img.height,
+              spoints = [1, 9, 2, 8, 3, 7, 4, 6, 5],
+              numLines = spoints.length,
+              slineStep = height / (numLines + 1);
+          canvas.width = width;
+          canvas.height = height;
+          ctx.drawImage(img, 0, 0);
+          while(numLines--){
+              console.log(spoints[numLines]);
+              var pxLine = ctx.getImageData(0, slineStep * spoints[numLines], width, 2).data,
+                  sum = [],
+                  min = 0,
+                  max = 0;
+              for(var row = 0; row < 2; row++){
+                  for(var col = 0; col < width; col++){
+                      var i = ((row * width) + col) * 4,
+                          g = ((pxLine[i] * 3) + (pxLine[i + 1] * 4) + (pxLine[i + 2] * 2)) / 9,
+                          s = sum[col];
+                      pxLine[i] = pxLine[i + 1] = pxLine[i + 2] = g;
+                      sum[col] = g + (undefined == s ? 0 : s);
+                  }
+              }
+              for(var i = 0; i < width; i++){
+                  var s = sum[i] = sum[i] / 2;
+                  if(s < min){ min = s; }
+                  if(s > max){ max = s; }
+              }
+              var pivot = min + ((max - min) / 2),
+                  bmp = [];
+              for(var col = 0; col < width; col++){
+                  var matches = 0;
+                  for(var row = 0; row < 2; row++){
+                      if(pxLine[((row * width) + col) * 4] > pivot){ matches++; }
+                  }
+                  bmp.push(matches > 1);
+              }
+              var curr = bmp[0],
+                  count = 1,
+                  lines = [];
+              for(var col = 0; col < width; col++){
+                  if(bmp[col] == curr){ count++; }
+                  else{
+                      lines.push(count);
+                      count = 1;
+                      curr = bmp[col];
+                  }
+              }
+              var code = '',
+                  bar = ~~((lines[1] + lines[2] + lines[3]) / 3),
+                  u = UPC_SET;
+              for(var i = 1, l = lines.length; i < l; i++){
+                  if(code.length < 6){ var group = lines.slice(i * 4, (i * 4) + 4); }
+                  else{ var group = lines.slice((i * 4 ) + 5, (i * 4) + 9); }
+                  var digits = [
+                      Math.round(group[0] / bar),
+                      Math.round(group[1] / bar),
+                      Math.round(group[2] / bar),
+                      Math.round(group[3] / bar)
+                  ];
+                  code += u[digits.join('')] || u[digits.reverse().join('')] || 'X';
+                  if(12 == code.length){ return code; break; }
+              }
+              if(-1 == code.indexOf('X')){ return code || false; }
+          }
+          return false;
+        };
+
+        alert(getBarcodeFromImage());
+        alert('FML');
+    };
+
+    $scope.shared.initIngredients = function() {
+      if ($scope.data.favorites) {
+        $scope.data.selected = _.union($scope.data.ingredients, $scope.data.favorites);
+      }
+    };
+
     var getFavorites = () => {
       Favorites.getFavorites().then((res) => {
-        $scope.data.favorites = res.data.local.favorites;
+        $scope.favorites = res.data.local.favorites;
+        console.log($scope.favorites);
+        //$scope.data.favorites = $scope.data.favorites;
       });
     };
+    getFavorites();
+
     /**
      * @name addIngredients
      * @desc Takes the user input ingredient and adds it to the array of current ingredients
      * @returns undefined
      */
-    $scope.selectIngredient = function (ingredient) {
+    $scope.addIngredient = function (ingred) {
       // Scrub the input string so that it looks standardized. For exmaple, strings such as
       //   'chICKEN        FinGers' -> 'Chicken Fingers'. 
-      var name = $scope.ingredient || ingredient;
+      var name = !!ingred ? ingred : $scope.ingredient;
       name = name.trim().split(/\s+/).map(function(item) {
         return item[0].toUpperCase() + item.substr(1).toLowerCase();
       }).join(' ');
-      $scope.data.selected.indexOf(name) === -1 && $scope.data.selected.push(name);
+      $scope.data.ingredients.indexOf(name) === -1 && $scope.data.ingredients.push(name);
       $scope.message = '';
+      $scope.data.selected = _.union($scope.data.ingredients, $scope.data.favorites);
+      console.log($scope.data.selected);
       $scope.ingredient = '';
+      //$scope.data.selected = $scope.data.favorites.concat($scope.data.ingredients);
     };
 
     $scope.selectFavorite = (favorite) => {
-      if ($scope.data.selected.indexOf(favorite) === -1) {
+      console.log('Clicked');
+        console.log(favorite);
+      if ($scope.data.favorites.indexOf(favorite) === -1) {
         $scope.data.selected.push(favorite);
       }
     };
 
+    $scope.selectIngredient = function(ingredient){
+      $scope.addFavorite(ingredient);
+    }
+
     $scope.addFavorite = function(favorite) {
-      var name = $scope.ingredient || favorite;
+      var name = !!favorite ? favorite : $scope.ingredient;
       name = name.trim().split(/\s+/).map(function(item) {
         return item[0].toUpperCase() + item.substr(1).toLowerCase();
       }).join(' ');
-
       if ($scope.data.favorites.indexOf(name) === -1) {
+        console.log("name",name);
         Favorites.addFavorite(name).then((resp) => {
           getFavorites();
         });
       }
       $scope.ingredient = '';
     };
+
+    // $scope.addFavorite = () => {
+    //   // used to demo shared object between components.
+    //   $scope.shared.input = $scope.data.favorite;
+    //   console.log('Clicked');
+
+    //   if ($scope.data.favorite && $scope.data.favorites.indexOf($scope.data.favorite) === -1) {
+    //     var name = $scope.data.favorite.trim().split(/\s+/).map(function(item) {
+    //       return item[0].toUpperCase() + item.substr(1).toLowerCase();
+    //     }).join(' ');
+    //     if ($scope.data.favorites.indexOf(name) === -1) {
+    //       Favorites.addFavorite(name).then(() => {
+    //         $scope.data.favorite = '';
+    //         getFavorites();
+    //       });
+    //     }
+    //   }
+    // };
 
     $scope.removeFavorite = (favorite) => {
       Favorites.removeFavorite(favorite).then(() => {
@@ -59,9 +202,8 @@ angular.module('fridegly.search', [])
      *       ingredient fron the list
      * @returns undefined
      */
-    $scope.deleteIngredient = function(ingredient) {
-      var ingredient = ingredient || this.ingredient;
-      $scope.data.selected.splice($scope.data.selected.indexOf(ingredient), 1);
+    $scope.deleteIngredient = function () {
+      $scope.data.selected.splice($scope.data.ingredients.indexOf(this.ingredient), 1);
     };
 
     /**
@@ -80,8 +222,6 @@ angular.module('fridegly.search', [])
         Search.sendIngredients(ingredients);
       }
     };
-
-    getFavorites();
 
     Search.getIngredientList()
       .then(function(res){
