@@ -8,6 +8,8 @@ angular.module('fridgely.recipes', ['ngSanitize'])
 
     $scope.data.recipes = [];
 
+    $scope.data.myRecipes = [];
+
     /**
      * @name getIngredients
      * @desc Get the ingredients for the current recipe from the Search service and store that
@@ -38,12 +40,30 @@ angular.module('fridgely.recipes', ['ngSanitize'])
       $scope.snippet = recipe.title;
     };
 
+    $scope.getUserRecipes = function() {
+      console.log('Getting recipes');
+      Search.getUserRecipes().then(function(res) {
+        var myRecipes = [];
+        var recipes = res.data.local.recipes;
+        recipes.forEach(function(recipe) {
+          myRecipes.push(JSON.parse(recipe));
+        });
+        $scope.data.myRecipes = myRecipes;
+        console.log($scope.data.myRecipes);
+      });
+    }
+
     $scope.addRecipe = function(recipe) {
-      
+      Search.addRecipe(recipe).then(function(resp) {
+        $scope.getUserRecipes();
+      });
     };
 
     $scope.removeRecipe = function(recipe) {
-
+      recipe = JSON.stringify(recipe);
+      Search.removeRecipe(recipe).then(function(resp) {
+        $scope.getUserRecipes();
+      })
     };
 
   })

@@ -1,19 +1,11 @@
-<!-- Since we're not certain on the response of the server, this is hard to fill out -->
-<div id="container" class="collection" ng-controller="RecipeController">
+<div ng-init="getUserRecipes()" id="container" class="collection" ng-controller="RecipeController">
 
   <div class="jumbotron valign center-align header rep-header">
-    <h1 class="headerText">Recipes</h1>
-  </div>
-
-  <div ng-show="showSearch" >
-    <div class="no-search valign center-align">
-    	<p class="no-search-text thin">We either don't have any recipes per the ingredients you've entered, or we didn't catch your request. Please head to the
-        <a href="#/search">Get Ingredients</a> page to search again!</p>
-    </div>
+    <h1 class="headerText">My Recipes</h1>
   </div>
 
   <div class="col s12 m6 l4">
-    <div class="card horizontal small" ng-repeat="recipe in data.recipes">
+    <div class="card horizontal small" ng-repeat="recipe in data.myRecipes">
       <div class="card-image">
         <img src="{{recipe.image}}">
       </div>
@@ -41,4 +33,3 @@
   </script>
 
 </div>
-

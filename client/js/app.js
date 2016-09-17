@@ -31,6 +31,11 @@ angular.module('fridgely', [
         controller: 'RecipeController',
         authenticate: true
       })
+      .when('/myrecipes', {
+        templateUrl: 'js/recipes/myrecipes.html',
+        controller: 'RecipeController',
+        authenticate: true
+      })
       .when('/search', {
         templateUrl: 'js/search/search.html',
         controller: 'SearchController',
