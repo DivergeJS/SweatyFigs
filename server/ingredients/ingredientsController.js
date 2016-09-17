@@ -68,10 +68,15 @@ var getInfo = function(id) {
  * @param {number} [count=5] - The number of results to return.
  * @returns {Promise<object>} Returns a promise that will resolve to an object.
  */
-var getRecipes = function(ingr, count = 5) {
+var getRecipes = function(ingr, diet, count = 5) {
   var ingredientsStr = typeof ingr === 'string' ? [ingr] : ingr.join('%2c+');
-
-  return getPromise('GET', 'findByIngredients?fillIngredients=false&ingredients=' +
+  if (diet) {
+    ingredientsStr = ingredientsStr + `&diet=${diet.toLowerCase()}`;
+    console.log(ingredientsStr);
+  }
+  //findByIngredients
+  //searchComplex?addRecipeInformation=true&
+  return getPromise('GET', 'searchComplex?addRecipeInformation=true&fillIngredients=false&includeIngredients=' +
       `${ingredientsStr}&limitLicense=false&number=${count}&ranking=1`)
   .then(result => {
     return JSON.parse(result);
@@ -83,20 +88,22 @@ module.exports = {
   
   getRecipesForIngredients: (req, res) => {
     if (req.query.ingredients) {
-      getRecipes(req.query.ingredients)
+      getRecipes(req.query.ingredients, req.query.diet)
         .then(result => {
           var newRes = [];
-
-          result.forEach(recipe => {
+          result.results.forEach(recipe => {
             newRes.push(recipe);
+            // console.log('Recipe: ', recipe);
             newRes.push(getSummary(recipe.id));
+            // console.log('Summary: ', getSummary(recipe.id));
             newRes.push(getSteps(recipe.id));
+            // console.log('Steps: ', getSteps(recipe.id));
             newRes.push(getInfo(recipe.id));
+            // console.log('Info: ', getInfo(recipe.id));
           });
 
           Promise.all(newRes).then(values => {
             var sol = [];
-
             for (var i = 0; i < values.length; i += 4) {
               var tmp = values[i];
               _.extend(

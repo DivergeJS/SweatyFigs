@@ -1,23 +1,16 @@
 <div class="search-container" id="search-container"> <!-- had the class '.container' -->
-  <div ng-init="initIngredients()" class="row search-row container"> <!-- start of row -->
+  <div class="row search-row container"> <!-- start of row -->
     <h1>Favorites</h1>
-
-
     <div ng-repeat="step in stepsModel">
         <img class="thumb" id="imgOrId" ng-src="{{step}}" />
     </div>
-    
     <input type='file' ng-model-instant onchange="angular.element(this).scope().imageUpload(this)" />
 
-<!--     <div ng-repeat="favorite in data.favorites">
-      <a ng-click="selectFavorite(favorite)" class="favorite" ">{{favorite}}</a>
-      <span class="removeFavoriteButton" ng-click="removeFavorite(favorite)"></span>
-      <a class="btn" ng-click="removeFavorite(favorite)">delete</a>
-    </div> -->
     <div class="input-field col s6 pull-s1 left-side-search">
       <form>
-	     <input ng-model="ingredient" type="text" id="autocomplete-input" class="autocomplete text-white" pattern="^\s*([A-Za-z]+\s*)+"/>
-	     <label for="autocomplete-input">Enter Ingredient</label>
+	     <input placeholder="Enter Ingredient" ng-model="ingredient" type="text" id="autocomplete-input" class="autocomplete text-white" pattern="^\s*([A-Za-z]+\s*)+"/>
+<!-- 	     <label for="autocomplete-input">Enter Ingredient</label> -->
+
         <!-- old button -->
         <!-- <button class="btn-floating btn-medium waves-effect waves-light green"><i class="material-icons">add</i></button> -->
         <button ng-click="selectIngredient()" class="btn right ingredients-button" type="submit" name="action">Add Selected!
@@ -36,9 +29,21 @@
           <i class="material-icons right"></i>
           </button>
         </div>
-    </div>
-    <div>
-      <div ng-if="ingredient" ng-repeat="i in data.ingredientList | filter: ingredient | limitTo: 10">{{i}}</div>
+        <br>
+        <br>
+        <div>
+          <select class="browser-default col s6" ng-model="option" ng-change="ingredient=option">
+            <option selected>Select Ingredient</option>
+            <option ng-repeat="i in data.ingredientList | filter: ingredient | limitTo: 10 track by $index" ng-selected="($index === 0)">{{format(i)}}
+            </option>
+          </select>
+        </div>
+        <div>
+          <select class="browser-default col s6" ng-model="filterOption">
+            <option selected>Select Diet</option>
+            <option ng-repeat="diet in filterOptions">{{diet}}</option>
+          </select>
+        </div>
     </div>
     <div class="col s6 push-s1">
       <div class = "selected-ingredients-text text-box-search">
