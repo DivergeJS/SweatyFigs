@@ -19,7 +19,7 @@ angular.module('fridgely.auth', [])
         .then(function (token) {
           if (token && token !== 'undefined') {
             $window.localStorage.setItem('com.fridgely', token);
-            $location.path('/landing');
+            $location.path('/layout');
           } else {
             $scope.usernameMessage = 'Username is already taken';
           }
@@ -45,7 +45,7 @@ angular.module('fridgely.auth', [])
         .then(function(token) {
           if (token && token !== 'undefined') {
             $window.localStorage.setItem('com.fridgely', token);
-            $location.path('/landing');
+            $location.path('/layout');
           } else {
             $scope.usernameMessage = 'Invalid username and password combination.';
           }

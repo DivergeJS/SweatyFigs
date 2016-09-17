@@ -33,11 +33,16 @@ module.exports = function(app) {
       res.send(ingredientList);
     });
 
-  app.route('/pictures/upc')
-    .post(function(req, res){
-      console.log(req.body);
-      res.send(200);
-    });
+  app.route('/user/recipes')
+    .get(function(req, res) {
+      db.getRecipes(req, res);
+    })
+    .post(function(req, res) {
+      db.addRecipe(req, res);
+    })
+    .put(function(req, res) {
+      db.removeRecipe(req, res);
+    })
 
   // I'm not sure that we need these endpoints anymore.
   // app.get('/api/recipe/:recipeId', ingredientsController.getRecipeId);

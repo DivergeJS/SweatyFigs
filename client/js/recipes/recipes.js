@@ -37,6 +37,15 @@ angular.module('fridgely.recipes', ['ngSanitize'])
       */
       $scope.snippet = recipe.title;
     };
+
+    $scope.addRecipe = function(recipe) {
+      
+    };
+
+    $scope.removeRecipe = function(recipe) {
+
+    };
+
   })
   .component('recipesComponent', {
     templateUrl: 'js/recipes/recipes.html',
