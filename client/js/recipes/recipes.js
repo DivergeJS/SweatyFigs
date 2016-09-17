@@ -60,6 +60,7 @@ angular.module('fridgely.recipes', ['ngSanitize'])
     };
 
     $scope.removeRecipe = function(recipe) {
+      recipe = JSON.stringify(recipe);
       Search.removeRecipe(recipe).then(function(resp) {
         $scope.getUserRecipes();
       })
